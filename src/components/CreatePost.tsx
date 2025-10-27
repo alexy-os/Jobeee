@@ -74,7 +74,7 @@ export const CreatePost = ({ onPostCreated }: CreatePostProps) => {
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="min-h-[80px] resize-none rounded-xs border-0 bg-transparent p-0 focus-visible:ring-0 text-foreground placeholder:text-muted-foreground"
+            className="min-h-[80px] resize-none rounded-[8px] border-0 bg-transparent p-0 focus-visible:ring-0 text-foreground placeholder:text-muted-foreground"
           />
           
           {selectedImage && (

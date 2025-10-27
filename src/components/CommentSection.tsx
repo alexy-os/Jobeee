@@ -16,7 +16,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
   const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
-    // Загружаем комментарии для этого поста
+    // Load comments for this post
     const postComments = getCommentsByPostId(postId);
     setComments(postComments);
   }, [postId]);
@@ -27,11 +27,11 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
       return;
     }
 
-    // Создаем новый комментарий (в реальном приложении это отправлялось бы на сервер)
+    // Create new comment (in real app this would be sent to server)
     const newCommentObj: Comment = {
-      id: Date.now(), // Временный ID для демонстрации
-      postId,
-      authorId: 1, // Предполагаем, что пользователь - Mike Rodriguez (администратор)
+      id: Date.now(),
+      post_id: postId,
+      author_id: 1, // Assume user is Mike Rodriguez (administrator)
       content: newComment,
       timestamp: "now",
       likes: 0,
@@ -45,20 +45,20 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
   };
 
   const handleReply = (parentCommentId: number, content: string) => {
-    // Создаем новый ответ (в реальном приложении это отправлялось бы на сервер)
+    // Create new reply (in real app this would be sent to server)
     const newReply: Comment = {
-      id: Date.now(), // Временный ID для демонстрации
-      postId,
-      authorId: 1, // Предполагаем, что пользователь - Mike Rodriguez (администратор)
+      id: Date.now(),
+      post_id: postId,
+      author_id: 1, // Assume user is Mike Rodriguez (administrator)
       content,
       timestamp: "now",
       likes: 0,
       isLiked: false,
       type: "response",
-      parentId: parentCommentId
+      parent_id: parentCommentId
     };
 
-    // Рекурсивно добавляем ответ к соответствующему родительскому комментарию
+    // Recursively add reply to corresponding parent comment
     const addReplyToComments = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
         if (comment.id === parentCommentId) {
@@ -81,7 +81,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
   };
 
   const handleLike = (commentId: number) => {
-    // Рекурсивно обновляем лайк для комментария
+    // Recursively update like for comment
     const updateLikeInComments = (comments: Comment[]): Comment[] => {
       return comments.map(comment => {
         if (comment.id === commentId) {
@@ -128,7 +128,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
             placeholder="Write a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[60px] resize-none bg-background"
+            className="min-h-[60px] rounded-[8px]resize-none bg-background"
           />
           <div className="flex justify-end mt-2">
             <Button

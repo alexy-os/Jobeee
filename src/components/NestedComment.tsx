@@ -19,7 +19,7 @@ export const NestedComment = ({ comment, level = 0, onReply, onLike }: NestedCom
   const [replyContent, setReplyContent] = useState("");
   const [showReplies, setShowReplies] = useState(true);
 
-  const author = getCharacterById(comment.authorId);
+  const author = getCharacterById(comment.author_id);
 
   const handleReply = () => {
     if (!replyContent.trim()) {
@@ -78,9 +78,9 @@ export const NestedComment = ({ comment, level = 0, onReply, onLike }: NestedCom
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-foreground text-sm">{author?.displayName}</span>
               <span className="text-muted-foreground text-xs">@{author?.username}</span>
-              {comment.roleResponse && (
+              {comment.role_response && (
                 <span className="text-xs px-2 py-1 bg-accent/20 text-accent rounded-full">
-                  {comment.roleResponse === 'barista_candidate' ? 'Barista Candidate' : 'Waitress Candidate'}
+                  {comment.role_response === 'barista_candidate' ? 'Barista Candidate' : 'Waitress Candidate'}
                 </span>
               )}
               {getTypeBadge(comment.type) && (
@@ -145,7 +145,7 @@ export const NestedComment = ({ comment, level = 0, onReply, onLike }: NestedCom
                 placeholder={`Reply to ${author?.displayName}...`}
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                className="min-h-[80px] resize-none bg-background text-sm"
+                className="min-h-[80px] rounded-[8px] resize-none bg-background text-sm"
               />
               <div className="flex justify-end gap-2 mt-2">
                 <Button

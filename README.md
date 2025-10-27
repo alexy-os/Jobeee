@@ -1,73 +1,191 @@
-# Welcome to your Lovable project
+# Jobeee - Social Learning Simulation Platform
 
-## Project info
+A social learning platform that simulates real workplace scenarios across different industries. Learn and practice professional skills through realistic job simulations with community feedback and evaluation.
 
-**URL**: https://lovable.dev/projects/982a6eeb-f884-4990-a3ba-660d29d4aefe
+## 🎯 Current Industries
 
-## How can I edit this code?
+### ☕ Coffee Shop
+Hospitality-focused simulations for baristas, waitresses, and managers
+- **Scenarios**: Coffee orders, complaints, rush hours, cash handling, special requests
+- **Team**: Alex Chen (Barista), Sara Martinez (Waitress), Mike Rodriguez (Manager)
+- **Recruiter**: Lisa Thompson
 
-There are several ways of editing your application.
+### 🎨 Web Studio
+Tech-focused simulations for designers, developers, and project managers
+- **Scenarios**: Design feedback, code reviews, client meetings, team coordination, deadline pressure
+- **Team**: Jordan Mitchell (Designer), Alexandra Kumar (Developer), David Hernandez (PM)
+- **Recruiter**: Emma Richardson
 
-**Use Lovable**
+## 🚀 Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/982a6eeb-f884-4990-a3ba-660d29d4aefe) and start prompting.
+### 1. **Feed** (`/`)
+- Main stream of all active scenarios
+- Real-time comments and feedback system
+- Nested threaded discussions
+- Like and favorite functionality
+- Multi-industry scenario browsing
 
-Changes made via Lovable will be committed automatically to this repo.
+### 2. **Organizations Hub** (`/organizations`) ✨ NEW
+- Browse all companies and their assessment programs
+- **Expandable organization cards** showing:
+  - Organization info and statistics
+  - Team member profiles
+  - Assessment threads grouped by status (Active/Completed)
+- **Side panel** with selected thread details
+- Thread status tracking: pending, active, completed, passed, failed
+- Assessment workflow visualization
 
-**Use your preferred IDE**
+### 3. **User Profile** (`/profile`)
+- Personal assessment history
+- Skill tracking
+- Statistics and progress
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📊 Data Architecture
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+The app uses Supabase-compatible data models with snake_case naming:
 
-Follow these steps:
+### Core Tables
+- **characters** - Users (staff, recruiters, candidates, customers)
+- **organizations** - Companies managing simulations
+- **posts** - Scenario/simulation cases
+- **comments** - Feedback and responses (nested threads)
+- **assessment_threads** - Evaluation sessions and progress tracking
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+See `NETWORK.md` for complete schema documentation.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 💡 Assessment Thread Workflow
 
-# Step 3: Install the necessary dependencies.
-npm i
+```
+Candidate Selection
+    ↓
+AssessmentThread Created
+    ↓
+Scenario Posted
+    ↓
+Candidate Response
+    ↓
+Mentor Feedback (Multiple)
+    ↓
+Candidate Replies
+    ↓
+Recruiter Final Decision
+    ↓
+Assessment Complete
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🎮 Position Types
+
+### Coffee Shop
+- `barista` - Beverage preparation and customer service
+- `waitress` - Table service and order management
+- `coffee_shop_manager` - Operations and team coordination
+
+### Web Studio
+- `web_designer` - UI/UX design and prototyping
+- `web_developer` - Full-stack development
+- `project_manager` - Project coordination and client relations
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 18 + TypeScript
+- **UI Library**: Shadcn/ui + Tailwind CSS
+- **Routing**: React Router v6
+- **Icons**: Lucide React
+- **Notifications**: Sonner
+- **State Management**: React Hooks + React Query
+
+## 📝 Project Structure
+
+```
+src/
+├── components/
+│   ├── OrganizationCard.tsx      # Organization display + threads
+│   ├── CommentSection.tsx        # Comment management
+│   ├── NestedComment.tsx         # Threaded comments
+│   ├── Navigation.tsx            # Navigation menu
+│   └── ... (other UI components)
+├── pages/
+│   ├── Feed.tsx                  # Main feed
+│   ├── Organizations.tsx         # Organizations hub ✨ NEW
+│   ├── Profile.tsx               # User profile
+│   └── NotFound.tsx
+├── data/
+│   ├── types.ts                  # TypeScript interfaces
+│   ├── characters.ts             # User data
+│   ├── posts.ts                  # Scenarios and comments
+│   ├── organizations.ts          # Organizations & threads ✨ NEW
+│   └── index.ts                  # Data exports
+└── ...
+```
+
+## 🚀 Getting Started
+
+### Installation
+```bash
+npm install
+```
+
+### Development
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Build
+```bash
+npm run build
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Linting
+```bash
+npm run lint
+```
 
-**Use GitHub Codespaces**
+## 📱 Navigation
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- `/` - Main feed with all scenarios
+- `/organizations` - Organizations hub with expandable cards and thread details
+- `/profile` - User profile and assessment history
+- `*` - 404 Not Found
 
-## What technologies are used for this project?
+## 🔄 Naming Conventions (Supabase-Ready)
 
-This project is built with:
+All data models use snake_case for database field compatibility:
+- ✅ `author_id`, `post_id`, `organization_id` (foreign keys)
+- ✅ `created_at`, `updated_at` (timestamps)
+- ✅ `role_response`, `parent_id` (related fields)
+- ✅ Enum types: `status`, `stage`, `industry`, `role`
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🎯 Next Steps
 
-## How can I deploy this project?
+1. **Database Migration**: Deploy to Supabase with generated schema
+2. **Authentication**: Add user auth with Supabase Auth
+3. **Real Comments**: Replace mock data with live backend
+4. **Assessment Progress**: Add progress tracking UI
+5. **Video Integration**: Support for recording and uploading assessment videos
+6. **Notifications**: Real-time updates for feedback and results
+7. **Mobile Responsiveness**: Optimize for smaller screens
+8. **Analytics**: Recruiter dashboard with assessment analytics
 
-Simply open [Lovable](https://lovable.dev/projects/982a6eeb-f884-4990-a3ba-660d29d4aefe) and click on Share -> Publish.
+## 📖 Documentation
 
-## Can I connect a custom domain to my Lovable project?
+See `NETWORK.md` for:
+- Complete database schema
+- Data flow diagrams
+- Assessment process details
+- Supabase table structure
 
-Yes, you can!
+## 🎨 UI Components
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+All components use Shadcn/ui:
+- Cards, Buttons, Badges
+- Dialogs, Drawers, Sheets
+- Form elements (Input, Textarea, Select, etc.)
+- Layout primitives (Tabs, Accordion, etc.)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📄 License
+
+MIT
+
+---
+
+**Jobeee** - Learn skills through realistic workplace simulations. 🚀
