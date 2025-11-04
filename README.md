@@ -1,7 +1,7 @@
 
-  # Split Panel with Collapsible Menu
+  # Jobeee
 
-  This is a code bundle for Split Panel with Collapsible Menu. The original project is available at https://www.figma.com/design/CTPu0ORuhaxmj885bzJJXz/Split-Panel-with-Collapsible-Menu.
+  This is a code bundle for Jobeee. The original project is available at https://www.figma.com/design/CTPu0ORuhaxmj885bzJJXz/Jobeee.
 
   ## Running the code
 

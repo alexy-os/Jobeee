@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { FeedCard } from "./components/FeedCard";
 import { RightPanel } from "./components/RightPanel";
@@ -21,18 +21,61 @@ import {
 } from "./components/ui/tabs";
 import { useIsMobile } from "./components/ui/use-mobile";
 import { MessageSquare } from "lucide-react";
+import { api } from "./utils/api";
+import { toast, Toaster } from "sonner@2.0.3";
 import type { ImperativePanelHandle } from "react-resizable-panels@2.1.7";
 
 export default function App() {
-  const [sidebarCollapsed, setSidebarCollapsed] =
-    useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [rightPanelSize, setRightPanelSize] = useState(35);
+  const [stories, setStories] = useState<any[]>([]);
+  const [feedItems, setFeedItems] = useState<any[]>([]);
+  const [selectedThread, setSelectedThread] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
 
   const sidebarRef = useRef<ImperativePanelHandle>(null);
   const feedRef = useRef<ImperativePanelHandle>(null);
   const rightPanelRef = useRef<ImperativePanelHandle>(null);
+
+  // Load initial data
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      
+      // Try to load data, if empty, seed the database
+      const [storiesData, feedData] = await Promise.all([
+        api.getStories(),
+        api.getFeed(),
+      ]);
+
+      if (storiesData.length === 0 && feedData.length === 0) {
+        console.log('Database is empty, seeding...');
+        await api.seedDatabase();
+        // Reload data after seeding
+        const [newStories, newFeed] = await Promise.all([
+          api.getStories(),
+          api.getFeed(),
+        ]);
+        setStories(newStories);
+        setFeedItems(newFeed);
+        toast.success('Welcome! Sample data loaded.');
+      } else {
+        setStories(storiesData);
+        setFeedItems(feedData);
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+      toast.error('Failed to load data. Please refresh the page.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleToggleCollapse = () => {
     const newCollapsed = !sidebarCollapsed;
@@ -63,33 +106,70 @@ export default function App() {
               Job<span className="text-orange-500">eee</span>
             </h1>
           )}
+          {/* Stories */}
           <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-slate-300 dark:border-slate-600 flex-shrink-0"
-              ></div>
-            ))}
+            {loading ? (
+              [...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-300 dark:border-slate-600 animate-pulse flex-shrink-0"
+                ></div>
+              ))
+            ) : (
+              stories.map((story) => (
+                <div
+                  key={story.id}
+                  className="relative w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-orange-500 flex-shrink-0 cursor-pointer hover:scale-110 transition-transform"
+                  title={story.user?.name}
+                >
+                  <img
+                    src={story.user?.avatar || story.thumbnailUrl}
+                    alt={story.user?.name}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
 
-        <FeedCard
-          type="quizz"
-          title="Quizz"
-          tags={["Tag", "Tag", "Tag"]}
-        />
-
-        <FeedCard type="thread" title="Thread" liked={true} />
-
-        <FeedCard type="article" title="Clickfraud" />
+        {/* Feed Items */}
+        {loading ? (
+          [...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 md:p-6 animate-pulse">
+              <div className="h-24 bg-slate-200 dark:bg-slate-700 rounded"></div>
+            </div>
+          ))
+        ) : (
+          feedItems.map((item) => (
+            <FeedCard
+              key={item.id}
+              type={item.type === 'quiz' ? 'quizz' : item.type}
+              title={item.data.title}
+              preview={item.data.description}
+              tags={item.data.tags}
+              imageUrl={item.data.imageUrl}
+              company={item.data.company}
+              likeCount={item.data.likeCount}
+              commentCount={item.data.commentCount}
+              onCardClick={() => {
+                if (item.type === 'thread') {
+                  setSelectedThread(item.id);
+                }
+              }}
+            />
+          ))
+        )}
       </div>
     </div>
   );
 
   if (isMobile) {
     return (
-      <div className="h-screen flex flex-col overflow-hidden">
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+      <>
+        <Toaster position="top-center" />
+        <div className="h-screen flex flex-col overflow-hidden">
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <MobileHeader
             onMenuClick={() => setSheetOpen(true)}
           />
@@ -114,7 +194,7 @@ export default function App() {
               value="discussion"
               className="h-full m-0"
             >
-              <RightPanel />
+              <RightPanel selectedThreadId={selectedThread} />
             </TabsContent>
           </div>
           <TabsList className="w-full rounded-none border-t h-14 grid grid-cols-2">
@@ -133,12 +213,15 @@ export default function App() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-      </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="h-screen overflow-hidden">
+    <>
+      <Toaster position="top-center" />
+      <div className="h-screen overflow-hidden">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
           ref={sidebarRef}
@@ -173,9 +256,10 @@ export default function App() {
           maxSize={55}
           onResize={(size) => setRightPanelSize(size)}
         >
-          <RightPanel />
+          <RightPanel selectedThreadId={selectedThread} />
         </ResizablePanel>
       </ResizablePanelGroup>
-    </div>
+      </div>
+    </>
   );
 }
